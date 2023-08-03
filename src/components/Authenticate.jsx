@@ -1,39 +1,38 @@
-import { useState } from 'react'
+import { useState } from "react";
+let COHORT_NAME = '2306-FTB-ET-WEB-FT'
+let BASE_URL = `https://strangers-things.herokuapp.com/api/${COHORT_NAME}`
+export default function Authenticate({ token }) {
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [error, setError] = useState(null);
 
-function Authenticate( { token }) {
-    const [ successMessage, setSuccessMessage] = useState(null)
-    const [ error, setError ] = useState(null)    
+  console.log("Token: ", token);
 
-    async function handleClick() {
-        try {
-            // authenticate the user
-            const response = await fetch('https://strangers-things.herokuapp.com/api/2306-ftb-et-web-ft/users/register', 
-              { 
-                method: "GET", 
-                headers: { 
-                  "Content-Type": "application/json",
-                  "Authorization": `Bearer ${token}` 
-                }
-              })
-            const responseData = await response.json()
-            console.log(responseData)
-
-            setSuccessMessage(`Hello, ${responseData.data.username}`)
-        } catch (error) {
-        setError(error.message);
+  async function handleClick() {
+    try {
+      const response = await fetch(
+        `${BASE_URL}someEndPoint`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          
         }
+      );
+      const result = await response.json();
+      console.log("Authenticate Result: ", result);
+      setSuccessMessage(result.message);
+    } catch (error) {
+      setError(error.message);
     }
+  }
 
-    return <>
-
-
-        { (successMessage) ? <p>{successMessage}</p> : <></>}
-
-
-        {successMessage && <p>{successMessage}</p>}
-        {error && <p>{error}</p>}
+  return (
+    <div>
+      {successMessage && <p>{successMessage}</p>}
+      {error && <p>{error}</p>}
       
-    </>
+    </div>
+  );
 }
-
-export default Authenticate

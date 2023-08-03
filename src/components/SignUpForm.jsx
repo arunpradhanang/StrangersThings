@@ -1,55 +1,70 @@
-import {useState} from 'react'
+import { useState } from "react";
+let COHORT_NAME = '2306-FTB-ET-WEB-FT'
+let BASE_URL = `https://strangers-things.herokuapp.com/api/${COHORT_NAME}`
+  
 
-function SignUpForm( { setToken } ) {
+export default function SignUpForm({ setToken }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [error, setError] = useState(null);
+  
 
-    const [ username, setUsername ] = useState('')
-    const [ password, setPassword ] = useState('')
-    const [ error, setError ] = useState(null)
-
-    async function handleSubmit(e) {
-        e.preventDefault()
-
-       try {
-        // call the server and give it the password / username
-        const response = await fetch('https://strangers-things.herokuapp.com/api/2306-ftb-et-web-ft/users/register',
-            {
-                method: 'POST',
-                headers: { 
-                    "Content-Type": "application/json" 
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
-            }
-        )
-
-        const data = await response.json()
-
-        setToken(data.token)
-
-        setUsername('')
-        setPassword('')
-
-        } catch(err){
-            setError(err)
+  async function handleSubmit(e) {
+    e.preventDefault();
+    
+    
+    try {
+      const response = await fetch(
+        `${BASE_URL}/users/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user:{
+            username,
+            password}
+          }),
         }
-
+      );
+      const result = await response.json();
+      console.log("Signup Result: ", result);
+      setToken(result.data.token);
+      setSuccessMessage(result.message);
+      setUsername("");
+      setPassword("");
+    } catch (error) {
+      setError(error.message);
     }
+  }
 
-
-    return <>
-        <h2>SignUp</h2>
-        <form onSubmit={handleSubmit}>
-            <label>Username:
-                <input value={username} onChange={e => setUsername(e.target.value)} />
-            </label>
-            <label>Password:
-                <input value={password} onChange={e => setPassword(e.target.value)} />
-            </label>
-            <button>Submit</button>
-        </form>
-    </>
+  return (
+    <div>
+      <h2>Signup</h2>
+      {successMessage && <p>{successMessage}</p>}
+      {error && <p>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <label>
+          Username:{" "}
+          <input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </label>
+        <label>
+          Password:{" "}
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+          />
+        </label>
+        <button>Submit</button>
+      </form>
+    </div>
+  );
 }
-
-export default SignUpForm
