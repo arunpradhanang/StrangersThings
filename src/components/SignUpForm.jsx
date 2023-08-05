@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 let COHORT_NAME = '2306-FTB-ET-WEB-FT'
 let BASE_URL = `https://strangers-things.herokuapp.com/api/${COHORT_NAME}`
   
@@ -6,8 +7,9 @@ let BASE_URL = `https://strangers-things.herokuapp.com/api/${COHORT_NAME}`
 export default function SignUpForm({ setToken }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [ errorMsg, setErrorMsg] = useState('')
   const [error, setError] = useState(null);
+  const navigate = useNavigate()
   
 
   async function handleSubmit(e) {
@@ -32,39 +34,38 @@ export default function SignUpForm({ setToken }) {
       const result = await response.json();
       console.log("Signup Result: ", result);
       setToken(result.data.token);
-      setSuccessMessage(result.message);
-      setUsername("");
-      setPassword("");
+      navigate('/allposts')
+      
     } catch (error) {
       setError(error.message);
     }
   }
+  
+  function passwordValidation(event) {
+    let passwd = event.target.value
+    if (passwd.length < 4) {
+        setErrorMsg('Password is too short!')
+    } else {
+        setErrorMsg('')
+    }
 
-  return (
-    <div>
-      <h2>Signup</h2>
-      {successMessage && <p>{successMessage}</p>}
-      {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>
-          Username:{" "}
-          <input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </label>
-        <label>
-          Password:{" "}
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-          />
-        </label>
-        <button>Submit</button>
-      </form>
+    setPassword(passwd)
+    
+}
+
+  return <div>
+        <h1>Sign in to get a token</h1>
+        <h2>* You can use any username/password</h2>
+
+        <form onSubmit={handleSubmit}>
+            <label>Username:
+                <input value={username} onChange={(event)=> setUsername(event.target.value)}/>
+            </label>
+            <label>Password:
+                <input value={password} onChange={passwordValidation}/>
+            </label>
+            { errorMsg && <h3>{errorMsg}</h3>}
+            <button>Sign Up</button>
+        </form>
     </div>
-  );
 }

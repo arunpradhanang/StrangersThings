@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import './App.css'
 import AllPosts from './components/AllPosts'
-import Authenticate from './components/Authenticate'
 import SignUpForm from './components/SignUpForm'
-import Nav from './components/Nav'
+
+import { NavLink, Route, Routes } from 'react-router-dom'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -13,11 +13,16 @@ function App() {
 
   return (
     <>
-    <Nav/>
-    <SignUpForm token={token} setToken={setToken} />
-    <Authenticate token={token} setToken={setToken} />
-      <AllPosts/>
-      
+    <nav>
+      <NavLink to='/signupform'>Sign up</NavLink>
+      <NavLink to='/dash'> Profile</NavLink>
+    </nav>
+   
+   
+   <Routes>
+  <Route path='/allposts' element={<AllPosts setToken={token}/>}/>
+  <Route path='/signupform' element={<SignUpForm setToken={setToken}/>}/>
+</Routes> 
       
       
     </>
